@@ -1,0 +1,189 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { AppShell } from "@/components/layout/shell";
+import { OdontoPrintService } from "@/services/odontoprint-service";
+import { PrintRun } from "@/types/database.types";
+import { formatDate } from "@/lib/utils";
+import {
+  Printer,
+  Clock,
+  CheckCircle2,
+  AlertTriangle,
+  ArrowRight,
+  Sparkles,
+  Scissors,
+  Layers,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
+
+export default function ImpressoesPage() {
+  const [runs, setRuns] = useState<
+    (PrintRun & { printer_name: string; resin_brand: string; items_count: number })[]
+  >([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      setIsLoading(true);
+      try {
+        const data = await OdontoPrintService.getPrintRuns();
+        setRuns(data);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  const activeRuns = runs.filter((r) => r.status === "EM_IMPRESSAO");
+  const finishedRuns = runs.filter((r) => r.status === "FINALIZADA");
+
+  return (
+    <AppShell>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200/80 pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="text-brand-700 bg-brand-50 border-brand-200">
+                Operações de Impressão
+              </Badge>
+              <span className="text-xs text-slate-400">&bull;</span>
+              <span className="text-xs text-slate-500">Monitoramento de Bancada</span>
+            </div>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight mt-1">
+              Ordens de Impressão 3D
+            </h1>
+          </div>
+
+          <Link href="/fatiador">
+            <Button variant="default" size="sm" className="gap-1.5">
+              <Scissors className="w-4 h-4" />
+              Novo Fatiamento
+            </Button>
+          </Link>
+        </div>
+
+        {/* Active Runs Section */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
+              </span>
+              Em Execução nas Cubas ({activeRuns.length})
+            </h2>
+          </div>
+
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Skeleton className="h-36 w-full rounded-xl" />
+              <Skeleton className="h-36 w-full rounded-xl" />
+            </div>
+          ) : activeRuns.length === 0 ? (
+            <div className="p-6 rounded-xl border border-dashed border-slate-200 bg-white text-center text-xs text-slate-400">
+              Nenhuma ordem de impressão sendo executada no momento.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {activeRuns.map((run) => (
+                <Card key={run.id} className="border-2 border-brand-300 bg-brand-50/20 hover:border-brand-400 transition">
+                  <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xl font-black text-brand-600">
+                        {run.run_code}
+                      </span>
+                      <Badge variant="lime" className="text-[10px]">
+                        Em Impressão
+                      </Badge>
+                    </div>
+                    <Link href={`/impressoes/${run.id}`}>
+                      <Button size="sm" variant="default" className="text-xs font-bold gap-1">
+                        Gerenciar / Finalizar
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Button>
+                    </Link>
+                  </CardHeader>
+                  <CardContent className="space-y-1.5 text-xs text-slate-600">
+                    <div>
+                      <span className="text-slate-400">Impressora:</span>{" "}
+                      <span className="font-semibold text-slate-800">{run.printer_name}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Resina:</span>{" "}
+                      <span className="font-semibold text-slate-800">{run.resin_brand}</span>
+                    </div>
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-[11px]">
+                      <span>{run.items_count} modelos na mesa</span>
+                      <span>Iniciada em: {formatDate(run.started_at)}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Finished Runs Section */}
+        <div className="pt-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              Histórico de Ordens Finalizadas ({finishedRuns.length})
+            </h2>
+          </div>
+
+          {isLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-16 w-full rounded-xl" />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {finishedRuns.map((run) => (
+                <Card key={run.id} className="hover:border-slate-300 transition">
+                  <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-4">
+                      <span className="font-mono text-base font-bold text-slate-800">
+                        {run.run_code}
+                      </span>
+                      <div>
+                        <div className="font-semibold text-slate-800">{run.printer_name}</div>
+                        <div className="text-slate-400 text-[11px]">{run.resin_brand}</div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <div className="text-right hidden md:block">
+                        <div className="text-[11px] text-slate-400">Finalizada em:</div>
+                        <div className="font-medium text-slate-700">{formatDate(run.finished_at)}</div>
+                      </div>
+
+                      <Badge variant="secondary" className="text-[11px]">
+                        Finalizada
+                      </Badge>
+
+                      <Link href={`/impressoes/${run.id}`}>
+                        <Button size="sm" variant="ghost" className="text-xs">
+                          Detalhes
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </AppShell>
+  );
+}
