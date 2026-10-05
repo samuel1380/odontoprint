@@ -36,7 +36,7 @@ import { DEFAULT_SYSTEM_SETTINGS, FILE_TYPE_LABELS } from "@/lib/constants";
 // INITIAL DEMO STATE (Espelha exatamente supabase/seed.sql)
 // ====================================================================
 let mockSettings: SystemSettings = {
-  id: "s0000000-0000-0000-0000-000000000001",
+  id: "90000000-0000-0000-0000-000000000001",
   maintenance_interval_days: 7,
   calibration_hexagon_min: 9.99,
   calibration_hexagon_max: 10.01,
@@ -253,7 +253,7 @@ let mockCases: Case[] = [
 
 let mockPrintJobs: PrintJob[] = [
   {
-    id: "j0000001-0000-0000-0000-000000000001",
+    id: "a0000001-0000-0000-0000-000000000001",
     case_id: "c0000001-0000-0000-0000-000000000001",
     queue_entered_at: new Date(Date.now() - 5 * 3600000).toISOString(),
     status: "CONCLUIDO",
@@ -261,7 +261,7 @@ let mockPrintJobs: PrintJob[] = [
     created_at: new Date(Date.now() - 5 * 3600000).toISOString(),
   },
   {
-    id: "j0000002-0000-0000-0000-000000000002",
+    id: "a0000002-0000-0000-0000-000000000002",
     case_id: "c0000002-0000-0000-0000-000000000002",
     queue_entered_at: new Date(Date.now() - 4 * 3600000).toISOString(),
     status: "PARCIAL",
@@ -269,7 +269,7 @@ let mockPrintJobs: PrintJob[] = [
     created_at: new Date(Date.now() - 4 * 3600000).toISOString(),
   },
   {
-    id: "j0000003-0000-0000-0000-000000000003",
+    id: "a0000003-0000-0000-0000-000000000003",
     case_id: "c0000003-0000-0000-0000-000000000003",
     queue_entered_at: new Date(Date.now() - 3 * 3600000).toISOString(),
     status: "AGUARDANDO",
@@ -277,7 +277,7 @@ let mockPrintJobs: PrintJob[] = [
     created_at: new Date(Date.now() - 3 * 3600000).toISOString(),
   },
   {
-    id: "j0000004-0000-0000-0000-000000000004",
+    id: "a0000004-0000-0000-0000-000000000004",
     case_id: "c0000004-0000-0000-0000-000000000004",
     queue_entered_at: new Date(Date.now() - 2 * 3600000).toISOString(),
     status: "AGUARDANDO",
@@ -285,7 +285,7 @@ let mockPrintJobs: PrintJob[] = [
     created_at: new Date(Date.now() - 2 * 3600000).toISOString(),
   },
   {
-    id: "j0000005-0000-0000-0000-000000000005",
+    id: "a0000005-0000-0000-0000-000000000005",
     case_id: "c0000005-0000-0000-0000-000000000005",
     queue_entered_at: new Date(Date.now() - 1 * 3600000).toISOString(),
     status: "AGUARDANDO",
@@ -293,7 +293,7 @@ let mockPrintJobs: PrintJob[] = [
     created_at: new Date(Date.now() - 1 * 3600000).toISOString(),
   },
   {
-    id: "j0000006-0000-0000-0000-000000000006",
+    id: "a0000006-0000-0000-0000-000000000006",
     case_id: "c0000006-0000-0000-0000-000000000006",
     queue_entered_at: new Date(Date.now() - 30 * 60000).toISOString(),
     status: "AGUARDANDO",
@@ -305,8 +305,8 @@ let mockPrintJobs: PrintJob[] = [
 let mockPrintJobItems: PrintJobItem[] = [
   // PAC-001 (Concluídos)
   {
-    id: "i0000001-0000-0000-0000-000000000001",
-    print_job_id: "j0000001-0000-0000-0000-000000000001",
+    id: "b0000001-0000-0000-0000-000000000001",
+    print_job_id: "a0000001-0000-0000-0000-000000000001",
     file_type: "MODELO_DE_TRABALHO",
     status: "CONCLUIDO",
     retry_count: 0,
@@ -315,8 +315,8 @@ let mockPrintJobItems: PrintJobItem[] = [
     created_at: new Date(Date.now() - 5 * 3600000).toISOString(),
   },
   {
-    id: "i0000002-0000-0000-0000-000000000002",
-    print_job_id: "j0000001-0000-0000-0000-000000000001",
+    id: "b0000002-0000-0000-0000-000000000002",
+    print_job_id: "a0000001-0000-0000-0000-000000000001",
     file_type: "ANTAGONISTA",
     status: "CONCLUIDO",
     retry_count: 0,
@@ -327,8 +327,8 @@ let mockPrintJobItems: PrintJobItem[] = [
 
   // PAC-002: Modelo concluiu na A002, mas Antagonista FALHOU e voltou à fila em destaque vermelho!
   {
-    id: "i0000003-0000-0000-0000-000000000003",
-    print_job_id: "j0000002-0000-0000-0000-000000000002",
+    id: "b0000003-0000-0000-0000-000000000003",
+    print_job_id: "a0000002-0000-0000-0000-000000000002",
     file_type: "MODELO_DE_TRABALHO",
     status: "CONCLUIDO",
     retry_count: 0,
@@ -337,8 +337,8 @@ let mockPrintJobItems: PrintJobItem[] = [
     created_at: new Date(Date.now() - 4 * 3600000).toISOString(),
   },
   {
-    id: "i0000004-0000-0000-0000-000000000004",
-    print_job_id: "j0000002-0000-0000-0000-000000000002",
+    id: "b0000004-0000-0000-0000-000000000004",
+    print_job_id: "a0000002-0000-0000-0000-000000000002",
     file_type: "ANTAGONISTA",
     status: "AGUARDANDO_FILA",
     retry_count: 1,
@@ -350,8 +350,8 @@ let mockPrintJobItems: PrintJobItem[] = [
 
   // PAC-003: Na fila
   {
-    id: "i0000005-0000-0000-0000-000000000005",
-    print_job_id: "j0000003-0000-0000-0000-000000000003",
+    id: "b0000005-0000-0000-0000-000000000005",
+    print_job_id: "a0000003-0000-0000-0000-000000000003",
     file_type: "MODELO_DE_TRABALHO",
     status: "AGUARDANDO_FILA",
     retry_count: 0,
@@ -359,8 +359,8 @@ let mockPrintJobItems: PrintJobItem[] = [
     created_at: new Date(Date.now() - 3 * 3600000).toISOString(),
   },
   {
-    id: "i0000006-0000-0000-0000-000000000006",
-    print_job_id: "j0000003-0000-0000-0000-000000000003",
+    id: "b0000006-0000-0000-0000-000000000006",
+    print_job_id: "a0000003-0000-0000-0000-000000000003",
     file_type: "TROQUEL",
     status: "AGUARDANDO_FILA",
     retry_count: 0,
@@ -368,8 +368,8 @@ let mockPrintJobItems: PrintJobItem[] = [
     created_at: new Date(Date.now() - 3 * 3600000).toISOString(),
   },
   {
-    id: "i0000007-0000-0000-0000-000000000007",
-    print_job_id: "j0000003-0000-0000-0000-000000000003",
+    id: "b0000007-0000-0000-0000-000000000007",
+    print_job_id: "a0000003-0000-0000-0000-000000000003",
     file_type: "ANTAGONISTA",
     status: "AGUARDANDO_FILA",
     retry_count: 0,
@@ -379,8 +379,8 @@ let mockPrintJobItems: PrintJobItem[] = [
 
   // PAC-004: Na fila
   {
-    id: "i0000008-0000-0000-0000-000000000008",
-    print_job_id: "j0000004-0000-0000-0000-000000000004",
+    id: "b0000008-0000-0000-0000-000000000008",
+    print_job_id: "a0000004-0000-0000-0000-000000000004",
     file_type: "PLACA_MIORRELAXANTE",
     status: "AGUARDANDO_FILA",
     retry_count: 0,
@@ -388,8 +388,8 @@ let mockPrintJobItems: PrintJobItem[] = [
     created_at: new Date(Date.now() - 2 * 3600000).toISOString(),
   },
   {
-    id: "i0000009-0000-0000-0000-000000000009",
-    print_job_id: "j0000004-0000-0000-0000-000000000004",
+    id: "b0000009-0000-0000-0000-000000000009",
+    print_job_id: "a0000004-0000-0000-0000-000000000004",
     file_type: "ELEMENTO_PROVA",
     status: "AGUARDANDO_FILA",
     retry_count: 0,
@@ -399,8 +399,8 @@ let mockPrintJobItems: PrintJobItem[] = [
 
   // PAC-005: Na fila
   {
-    id: "i0000010-0000-0000-0000-000000000010",
-    print_job_id: "j0000005-0000-0000-0000-000000000005",
+    id: "b0000010-0000-0000-0000-000000000010",
+    print_job_id: "a0000005-0000-0000-0000-000000000005",
     file_type: "ELEMENTO_PROVISORIO",
     status: "AGUARDANDO_FILA",
     retry_count: 0,
@@ -408,8 +408,8 @@ let mockPrintJobItems: PrintJobItem[] = [
     created_at: new Date(Date.now() - 1 * 3600000).toISOString(),
   },
   {
-    id: "i0000011-0000-0000-0000-000000000011",
-    print_job_id: "j0000005-0000-0000-0000-000000000005",
+    id: "b0000011-0000-0000-0000-000000000011",
+    print_job_id: "a0000005-0000-0000-0000-000000000005",
     file_type: "ELEMENTO_CARGA_CERAMICA",
     status: "AGUARDANDO_FILA",
     retry_count: 0,
@@ -419,8 +419,8 @@ let mockPrintJobItems: PrintJobItem[] = [
 
   // PAC-006: Na fila
   {
-    id: "i0000012-0000-0000-0000-000000000012",
-    print_job_id: "j0000006-0000-0000-0000-000000000006",
+    id: "b0000012-0000-0000-0000-000000000012",
+    print_job_id: "a0000006-0000-0000-0000-000000000006",
     file_type: "MODELO_DE_TRABALHO",
     status: "AGUARDANDO_FILA",
     retry_count: 0,
@@ -431,7 +431,7 @@ let mockPrintJobItems: PrintJobItem[] = [
 
 let mockPrintRuns: PrintRun[] = [
   {
-    id: "r0000001-0000-0000-0000-000000000001",
+    id: "e0000001-0000-0000-0000-000000000001",
     run_code: "A001",
     printer_id: "11111111-1111-1111-1111-111111111111",
     resin_batch_id: "44444444-4444-4444-4444-444444444444",
@@ -444,7 +444,7 @@ let mockPrintRuns: PrintRun[] = [
     created_at: new Date(Date.now() - 4 * 3600000).toISOString(),
   },
   {
-    id: "r0000002-0000-0000-0000-000000000002",
+    id: "e0000002-0000-0000-0000-000000000002",
     run_code: "A002",
     printer_id: "11111111-1111-1111-1111-111111111111",
     resin_batch_id: "44444444-4444-4444-4444-444444444444",
@@ -460,30 +460,30 @@ let mockPrintRuns: PrintRun[] = [
 
 let mockPrintRunItems: PrintRunItem[] = [
   {
-    id: "ri000001-0000-0000-0000-000000000001",
-    print_run_id: "r0000001-0000-0000-0000-000000000001",
-    print_job_item_id: "i0000001-0000-0000-0000-000000000001",
+    id: "f0000001-0000-0000-0000-000000000001",
+    print_run_id: "e0000001-0000-0000-0000-000000000001",
+    print_job_item_id: "b0000001-0000-0000-0000-000000000001",
     result: "CONCLUIDO",
     created_at: new Date(Date.now() - 4 * 3600000).toISOString(),
   },
   {
-    id: "ri000002-0000-0000-0000-000000000002",
-    print_run_id: "r0000001-0000-0000-0000-000000000001",
-    print_job_item_id: "i0000002-0000-0000-0000-000000000002",
+    id: "f0000002-0000-0000-0000-000000000002",
+    print_run_id: "e0000001-0000-0000-0000-000000000001",
+    print_job_item_id: "b0000002-0000-0000-0000-000000000002",
     result: "CONCLUIDO",
     created_at: new Date(Date.now() - 4 * 3600000).toISOString(),
   },
   {
-    id: "ri000003-0000-0000-0000-000000000003",
-    print_run_id: "r0000002-0000-0000-0000-000000000002",
-    print_job_item_id: "i0000003-0000-0000-0000-000000000003",
+    id: "f0000003-0000-0000-0000-000000000003",
+    print_run_id: "e0000002-0000-0000-0000-000000000002",
+    print_job_item_id: "b0000003-0000-0000-0000-000000000003",
     result: "CONCLUIDO",
     created_at: new Date(Date.now() - 2 * 3600000).toISOString(),
   },
   {
-    id: "ri000004-0000-0000-0000-000000000004",
-    print_run_id: "r0000002-0000-0000-0000-000000000002",
-    print_job_item_id: "i0000004-0000-0000-0000-000000000004",
+    id: "f0000004-0000-0000-0000-000000000004",
+    print_run_id: "e0000002-0000-0000-0000-000000000002",
+    print_job_item_id: "b0000004-0000-0000-0000-000000000004",
     result: "FALHOU",
     failure_reason: "Descolamento da mesa de impressão na cúspide lingual",
     created_at: new Date(Date.now() - 2 * 3600000).toISOString(),
@@ -492,10 +492,10 @@ let mockPrintRunItems: PrintRunItem[] = [
 
 let mockAuditLogs: AuditLog[] = [
   {
-    id: "l0000001-0000-0000-0000-000000000001",
+    id: "70000001-0000-0000-0000-000000000001",
     action: "ITEM_REIMPRESSAO",
     entity_type: "print_job_items",
-    entity_id: "i0000004-0000-0000-0000-000000000004",
+    entity_id: "b0000004-0000-0000-0000-000000000004",
     new_data: {
       patient_code: "PAC-002",
       item: "Antagonista",
@@ -505,23 +505,23 @@ let mockAuditLogs: AuditLog[] = [
     created_at: new Date(Date.now() - 45 * 60000).toISOString(),
   },
   {
-    id: "l0000002-0000-0000-0000-000000000002",
+    id: "70000002-0000-0000-0000-000000000002",
     action: "IMPRESSAO_FINALIZADA",
     entity_type: "print_runs",
-    entity_id: "r0000002-0000-0000-0000-000000000002",
+    entity_id: "e0000002-0000-0000-0000-000000000002",
     new_data: { run_code: "A002", completed: 1, failed: 1 },
     created_at: new Date(Date.now() - 45 * 60000).toISOString(),
   },
   {
-    id: "l0000003-0000-0000-0000-000000000003",
+    id: "70000003-0000-0000-0000-000000000003",
     action: "IMPRESSAO_INICIADA",
     entity_type: "print_runs",
-    entity_id: "r0000002-0000-0000-0000-000000000002",
+    entity_id: "e0000002-0000-0000-0000-000000000002",
     new_data: { run_code: "A002", printer: "Odonto Printer 01", items_count: 2 },
     created_at: new Date(Date.now() - 2 * 3600000).toISOString(),
   },
   {
-    id: "l0000004-0000-0000-0000-000000000004",
+    id: "70000004-0000-0000-0000-000000000004",
     action: "MANUTENCAO_REPROVADA",
     entity_type: "printers",
     entity_id: "33333333-3333-3333-3333-333333333333",
@@ -529,7 +529,7 @@ let mockAuditLogs: AuditLog[] = [
     created_at: new Date(Date.now() - 24 * 3600000).toISOString(),
   },
   {
-    id: "l0000005-0000-0000-0000-000000000005",
+    id: "70000005-0000-0000-0000-000000000005",
     action: "RESINA_CALIBRADA",
     entity_type: "resin_calibrations",
     entity_id: "dddddddd-dddd-dddd-dddd-dddddddddddd",
