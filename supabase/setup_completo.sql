@@ -523,92 +523,10 @@ INSERT INTO public.system_settings (
 SELECT 7, 9.99, 10.01, 'A', '00A'
 WHERE NOT EXISTS (SELECT 1 FROM public.system_settings);
 
--- 9. DADOS DE DEMONSTRAÇÃO (SEED)
--- Impressoras
-INSERT INTO public.printers (id, name, brand, model, serial_number, maintenance_contact, active)
-VALUES 
-('11111111-1111-1111-1111-111111111111', 'Odonto Printer 01', 'Elegoo', 'Saturn 3 Ultra 12K', 'SN-ELG-9901-BR', 'suporte@odontoprint.com.br / (11) 98888-0001', true),
-('22222222-2222-2222-2222-222222222222', 'Odonto Printer 02', 'Anycubic', 'Photon Mono M5s', 'SN-ANY-4402-SP', 'assistencia@photonbrasil.com / (11) 97777-0002', true),
-('33333333-3333-3333-3333-333333333333', 'Odonto Printer 03', 'Creality', 'Halot Mage Pro 8K', 'SN-CRE-7703-RJ', 'manutencao@halotlab.com / (21) 96666-0003', true)
-ON CONFLICT (id) DO NOTHING;
-
--- Manutenções
-INSERT INTO public.printer_maintenances (id, printer_id, performed_at, leveling_ok, cleaning_ok, fep_integrity_ok, led_integrity_ok, black_points_led, low_led_luminosity, protective_film_ok, notes, approved)
-VALUES 
-('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '11111111-1111-1111-1111-111111111111', now() - INTERVAL '2 days', true, true, true, true, false, false, true, 'Manutenção preventiva semanal realizada. FEP novo.', true),
-('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', '22222222-2222-2222-2222-222222222222', now() - INTERVAL '10 days', true, true, true, true, false, false, true, 'Manutenção OK, porém venceu há 3 dias.', true),
-('cccccccc-cccc-cccc-cccc-cccccccccccc', '33333333-3333-3333-3333-333333333333', now() - INTERVAL '1 day', true, true, false, false, true, true, false, 'FEP riscado e pontos pretos no painel LED.', false)
-ON CONFLICT (id) DO NOTHING;
-
--- Lotes de Resina
-INSERT INTO public.resin_batches (id, brand, resin_type, lot, volume, volume_unit, received_at, status, active)
-VALUES 
-('44444444-4444-4444-4444-444444444444', 'PriZma 3D Bio', 'Model Precision Beige', 'BIO-2026-A', 1000, 'ml', now() - INTERVAL '15 days', 'CALIBRADA', true),
-('55555555-5555-5555-5555-555555555555', 'Smart Print', 'Denture Gingiva Pink', 'SPD-9921-B', 1000, 'ml', now() - INTERVAL '3 days', 'AGUARDANDO_CALIBRACAO', true),
-('66666666-6666-6666-6666-666666666666', 'Cosmos Castable', 'Castable Resin Direct Burnout', 'CC-1044-C', 500, 'ml', now() - INTERVAL '5 days', 'REPROVADA', true)
-ON CONFLICT (id) DO NOTHING;
-
--- Calibrações
-INSERT INTO public.resin_calibrations (id, resin_batch_id, printer_id, calibration_number, initial_exposure_time, exposure_time, lift_speed, layer_height, hexagon_size_mm, lines_visible, numbers_visible, details_visible, wash_time, cure_time, status, finalized_at)
-VALUES 
-('dddddddd-dddd-dddd-dddd-dddddddddddd', '44444444-4444-4444-4444-444444444444', '11111111-1111-1111-1111-111111111111', 1, 25.0, 2.30, 60.0, 0.050, 10.000, true, true, true, 5.0, 10.0, 'APROVADA', now() - INTERVAL '14 days'),
-('eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', '66666666-6666-6666-6666-666666666666', '11111111-1111-1111-1111-111111111111', 1, 30.0, 2.90, 50.0, 0.050, 10.040, false, true, false, 5.0, 15.0, 'REPROVADA', now() - INTERVAL '4 days')
-ON CONFLICT (id) DO NOTHING;
-
--- Casos de Pacientes
-INSERT INTO public.cases (id, patient_code, patient_name, notes, created_at)
-VALUES 
-('c0000001-0000-0000-0000-000000000001', 'PAC-001', 'João Silva', 'Prótese Fixa sobre implantes elemento 14 a 16', now() - INTERVAL '5 hours'),
-('c0000002-0000-0000-0000-000000000002', 'PAC-002', 'Maria Oliveira', 'Placa de bruxismo superior + modelo de estudo', now() - INTERVAL '4 hours'),
-('c0000003-0000-0000-0000-000000000003', 'PAC-003', 'Carlos Eduardo', 'Troquel múltiplo e modelo de trabalho', now() - INTERVAL '3 hours'),
-('c0000004-0000-0000-0000-000000000004', 'PAC-004', 'Ana Paula Santos', 'Prova estética e provisórios dentes anteriores', now() - INTERVAL '2 hours'),
-('c0000005-0000-0000-0000-000000000005', 'PAC-005', 'Roberto Souza', 'Carga cerâmica e antagonista', now() - INTERVAL '1 hour'),
-('c0000006-0000-0000-0000-000000000006', 'PAC-006', 'Camila Ferreira', 'Modelo de trabalho e placa miorrelaxante', now() - INTERVAL '30 minutes')
-ON CONFLICT (id) DO NOTHING;
-
--- Jobs e Itens da Fila
-INSERT INTO public.print_jobs (id, case_id, queue_entered_at, status, priority)
-VALUES 
-('a0000001-0000-0000-0000-000000000001', 'c0000001-0000-0000-0000-000000000001', now() - INTERVAL '5 hours', 'CONCLUIDO', 1),
-('a0000002-0000-0000-0000-000000000002', 'c0000002-0000-0000-0000-000000000002', now() - INTERVAL '4 hours', 'PARCIAL', 2),
-('a0000003-0000-0000-0000-000000000003', 'c0000003-0000-0000-0000-000000000003', now() - INTERVAL '3 hours', 'AGUARDANDO', 1),
-('a0000004-0000-0000-0000-000000000004', 'c0000004-0000-0000-0000-000000000004', now() - INTERVAL '2 hours', 'AGUARDANDO', 1),
-('a0000005-0000-0000-0000-000000000005', 'c0000005-0000-0000-0000-000000000005', now() - INTERVAL '1 hour', 'AGUARDANDO', 1),
-('a0000006-0000-0000-0000-000000000006', 'c0000006-0000-0000-0000-000000000006', now() - INTERVAL '30 minutes', 'AGUARDANDO', 1)
-ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO public.print_job_items (id, print_job_id, file_type, status, retry_count, is_retry, last_failure_reason, last_run_code)
-VALUES 
-('b0000001-0000-0000-0000-000000000001', 'a0000001-0000-0000-0000-000000000001', 'MODELO_DE_TRABALHO', 'CONCLUIDO', 0, false, NULL, 'A001'),
-('b0000002-0000-0000-0000-000000000002', 'a0000001-0000-0000-0000-000000000001', 'ANTAGONISTA', 'CONCLUIDO', 0, false, NULL, 'A001'),
-('b0000003-0000-0000-0000-000000000003', 'a0000002-0000-0000-0000-000000000002', 'MODELO_DE_TRABALHO', 'CONCLUIDO', 0, false, NULL, 'A002'),
-('b0000004-0000-0000-0000-000000000004', 'a0000002-0000-0000-0000-000000000002', 'ANTAGONISTA', 'AGUARDANDO_FILA', 1, true, 'Descolamento da mesa de impressão na cúspide lingual', 'A002'),
-('b0000005-0000-0000-0000-000000000005', 'a0000003-0000-0000-0000-000000000003', 'MODELO_DE_TRABALHO', 'AGUARDANDO_FILA', 0, false, NULL, NULL),
-('b0000006-0000-0000-0000-000000000006', 'a0000003-0000-0000-0000-000000000003', 'TROQUEL', 'AGUARDANDO_FILA', 0, false, NULL, NULL),
-('b0000007-0000-0000-0000-000000000007', 'a0000003-0000-0000-0000-000000000003', 'ANTAGONISTA', 'AGUARDANDO_FILA', 0, false, NULL, NULL),
-('b0000008-0000-0000-0000-000000000008', 'a0000004-0000-0000-0000-000000000004', 'PLACA_MIORRELAXANTE', 'AGUARDANDO_FILA', 0, false, NULL, NULL),
-('b0000009-0000-0000-0000-000000000009', 'a0000004-0000-0000-0000-000000000004', 'ELEMENTO_PROVA', 'AGUARDANDO_FILA', 0, false, NULL, NULL),
-('b0000010-0000-0000-0000-000000000010', 'a0000005-0000-0000-0000-000000000005', 'ELEMENTO_PROVISORIO', 'AGUARDANDO_FILA', 0, false, NULL, NULL),
-('b0000011-0000-0000-0000-000000000011', 'a0000005-0000-0000-0000-000000000005', 'ELEMENTO_CARGA_CERAMICA', 'AGUARDANDO_FILA', 0, false, NULL, NULL),
-('b0000012-0000-0000-0000-000000000012', 'a0000006-0000-0000-0000-000000000006', 'MODELO_DE_TRABALHO', 'AGUARDANDO_FILA', 0, false, NULL, NULL)
-ON CONFLICT (id) DO NOTHING;
-
--- Ordens de Impressão de Exemplo
-INSERT INTO public.print_runs (id, run_code, printer_id, resin_batch_id, calibration_id, supports_confirmed, resin_manipulated, status, started_at, finished_at)
-VALUES 
-('e0000001-0000-0000-0000-000000000001', 'A001', '11111111-1111-1111-1111-111111111111', '44444444-4444-4444-4444-444444444444', 'dddddddd-dddd-dddd-dddd-dddddddddddd', true, true, 'FINALIZADA', now() - INTERVAL '4 hours', now() - INTERVAL '2 hours'),
-('e0000002-0000-0000-0000-000000000002', 'A002', '11111111-1111-1111-1111-111111111111', '44444444-4444-4444-4444-444444444444', 'dddddddd-dddd-dddd-dddd-dddddddddddd', true, true, 'FINALIZADA', now() - INTERVAL '2 hours', now() - INTERVAL '45 minutes')
-ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO public.print_run_items (id, print_run_id, print_job_item_id, result, failure_reason)
-VALUES 
-('f0000001-0000-0000-0000-000000000001', 'e0000001-0000-0000-0000-000000000001', 'b0000001-0000-0000-0000-000000000001', 'CONCLUIDO', NULL),
-('f0000002-0000-0000-0000-000000000002', 'e0000001-0000-0000-0000-000000000001', 'b0000002-0000-0000-0000-000000000002', 'CONCLUIDO', NULL),
-('f0000003-0000-0000-0000-000000000003', 'e0000002-0000-0000-0000-000000000002', 'b0000003-0000-0000-0000-000000000003', 'CONCLUIDO', NULL),
-('f0000004-0000-0000-0000-000000000004', 'e0000002-0000-0000-0000-000000000002', 'b0000004-0000-0000-0000-000000000004', 'FALHOU', 'Descolamento da mesa de impressão na cúspide lingual')
-ON CONFLICT (id) DO NOTHING;
-
-SELECT setval('print_run_normal_seq', 2, true);
+-- 9. INICIALIZAÇÃO LIMPA PARA PRODUÇÃO (SEM DADOS DE TESTE)
+-- Sequências iniciadas para o primeiro código de impressão ser A001 e de reimpressão 00A1
+SELECT setval('print_run_normal_seq', 1, false);
 SELECT setval('print_run_retry_seq', 1, false);
 
 -- FIM DO SCRIPT COMPLETO
+
