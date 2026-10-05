@@ -3,181 +3,265 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import { UserRole, USER_ROLES } from "@/lib/constants";
-import { Printer, Shield, Sparkles, ArrowRight, Lock, Mail } from "lucide-react";
+import { 
+  Printer, 
+  Lock, 
+  Mail, 
+  Eye, 
+  EyeOff, 
+  ShieldCheck, 
+  Layers, 
+  FlaskConical, 
+  ArrowRight,
+  CheckCircle2
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setActiveRole } = useAuth();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleQuickLogin = (role: UserRole) => {
-    setActiveRole(role);
-    toast.success(`Sessão iniciada como ${USER_ROLES[role]}`);
-    router.push("/dashboard");
-  };
-
-  const handleManualLogin = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setActiveRole("ADMIN");
-      toast.success("Autenticado com sucesso no OdontoPrint!");
-      router.push("/dashboard");
-    }, 600);
-  };
+    if (!email.trim()) {
+      toast.error("Por favor, insira o seu e-mail profissional.");
+      return;
+    }
 
-  const demoAccounts: { role: UserRole; name: string; desc: string; color: string }[] = [
-    {
-      role: "CADISTA",
-      name: "Dra. Juliana Ribeiro",
-      desc: "Responsável pelo design CAD e encaminhamento dos modelos para fresagem/impressão",
-      color: "border-blue-200 bg-blue-50/50 hover:bg-blue-50 text-blue-700",
-    },
-    {
-      role: "OPERADOR_IMPRESSAO",
-      name: "Lucas Mendes",
-      desc: "Opera a fila de produção, fatiamento, conferência e controle de falhas",
-      color: "border-amber-200 bg-amber-50/50 hover:bg-amber-50 text-amber-700",
-    },
-    {
-      role: "OPERADOR_RESINA",
-      name: "Eng. Rafael Costa",
-      desc: "Gestão do parque de impressoras, manutenção periódica de 7 dias e calibração milimétrica",
-      color: "border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50 text-emerald-700",
-    },
-    {
-      role: "ADMIN",
-      name: "Dr. Marcelo Arquiteto",
-      desc: "Acesso irrestrito a todos os módulos operacionais, auditoria e parametrização",
-      color: "border-purple-200 bg-purple-50/50 hover:bg-purple-50 text-purple-700",
-    },
-  ];
+    setIsLoading(true);
+    try {
+      const res = await login(email, password);
+      if (res.success) {
+        toast.success("Autenticado com sucesso no OdontoPrint!");
+        router.push("/dashboard");
+      } else {
+        toast.error(res.error || "Credenciais inválidas. Verifique os dados digitados.");
+      }
+    } catch {
+      toast.error("Ocorreu um erro ao processar a autenticação.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500 text-white shadow-card mb-4">
-          <Printer className="h-8 w-8" />
-        </div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
-          ODONTO<span className="text-brand-500">PRINT</span>
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Sistema Empresarial de Gestão e Produção 3D Odontológica
-        </p>
-      </div>
+    <div className="min-h-screen w-full flex flex-col lg:flex-row bg-white selection:bg-brand-500 selection:text-white">
+      {/* Coluna Esquerda: Apresentação da Plataforma e Autoridade Técnica */}
+      <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-between p-12 bg-slate-950 text-white overflow-hidden border-r border-slate-800">
+        {/* Glow de fundo e padrão de malha médica */}
+        <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px]" />
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-brand-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl">
-        <div className="bg-white py-8 px-6 shadow-card rounded-2xl border border-slate-200/80 sm:px-10">
-          {/* Executive Demo Quick Access */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-brand-500" />
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                  Acesso Rápido para Apresentação
-                </span>
-              </div>
-              <Badge variant="outline" className="text-[10px]">
-                4 Perfis Prontos
-              </Badge>
+        {/* Topo da Coluna Esquerda */}
+        <div className="relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-500 text-white shadow-lg shadow-brand-500/30">
+              <Printer className="h-6 w-6" />
             </div>
-
-            <p className="text-xs text-slate-500 mt-2 mb-4">
-              Clique em qualquer um dos perfis abaixo para navegar diretamente com as permissões e telas do usuário:
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {demoAccounts.map((acc) => (
-                <button
-                  key={acc.role}
-                  type="button"
-                  onClick={() => handleQuickLogin(acc.role)}
-                  className={`flex flex-col text-left p-3.5 rounded-xl border transition-all hover:scale-[1.01] active:scale-[0.99] shadow-sm ${acc.color}`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs uppercase tracking-wider">
-                      {USER_ROLES[acc.role]}
-                    </span>
-                    <ArrowRight className="w-3.5 h-3.5 opacity-70" />
-                  </div>
-                  <div className="text-xs font-semibold text-slate-900 mt-1">
-                    {acc.name}
-                  </div>
-                  <div className="text-[11px] text-slate-500 line-clamp-2 mt-1 leading-snug">
-                    {acc.desc}
-                  </div>
-                </button>
-              ))}
+            <div>
+              <span className="text-xl font-bold tracking-tight">
+                ODONTO<span className="text-brand-400">PRINT</span>
+              </span>
+              <span className="block text-[10px] uppercase tracking-widest text-slate-400 font-semibold">
+                Dental Manufacturing Platform
+              </span>
             </div>
           </div>
+        </div>
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200" />
+        {/* Conteúdo Central */}
+        <div className="relative z-10 my-auto py-12 max-w-lg">
+          <div className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/80 px-3.5 py-1 text-xs text-brand-300 mb-6 backdrop-blur-sm">
+            <ShieldCheck className="w-3.5 h-3.5 text-brand-400" />
+            <span>Sistema Operacional para Laboratórios Odontológicos</span>
+          </div>
+
+          <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
+            Gestão integrada, precisão e rastreabilidade em impressão 3D.
+          </h1>
+          <p className="mt-4 text-slate-400 text-sm leading-relaxed">
+            Plataforma projetada para otimizar o fluxo de trabalho de ponta a ponta: da recepção de arquivos CAD até a polimerização final e entrega clínica.
+          </p>
+
+          <div className="mt-8 space-y-4">
+            <div className="flex items-start gap-3.5">
+              <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-brand-900/60 border border-brand-700/60 text-brand-300">
+                <Layers className="h-3.5 w-3.5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-slate-200">Fila FIFO & Rastreabilidade de Modelos</h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Sequenciamento inteligente de peças, controle de status por paciente e priorização em caso de repetição.
+                </p>
+              </div>
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-3 text-slate-400 font-semibold">
-                Ou acesse com credenciais
+
+            <div className="flex items-start gap-3.5">
+              <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-emerald-900/60 border border-emerald-700/60 text-emerald-300">
+                <FlaskConical className="h-3.5 w-3.5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-slate-200">Controle Paramétrico de Resinas</h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Validação milimétrica dimensional e liberação de lotes com segurança conforme protocolos técnicos.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3.5">
+              <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-blue-900/60 border border-blue-700/60 text-blue-300">
+                <Printer className="h-3.5 w-3.5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-slate-200">Gestão Preventiva do Parque de Impressoras</h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Checklists técnicos de 7 dias, registro de manutenções periódicas e histórico de conformidade.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Rodapé da Coluna Esquerda */}
+        <div className="relative z-10 flex items-center justify-between text-xs text-slate-500 pt-6 border-t border-slate-850">
+          <span>&copy; {new Date().getFullYear()} OdontoPrint Inc.</span>
+          <span className="flex items-center gap-1.5 text-slate-400">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            Conformidade Técnica RDC / CFO
+          </span>
+        </div>
+      </div>
+
+      {/* Coluna Direita: Formulário de Autenticação */}
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 py-12 sm:px-12 xl:px-24 bg-white">
+        <div className="mx-auto w-full max-w-sm">
+          {/* Logo visível em telas menores */}
+          <div className="flex lg:hidden items-center gap-3 mb-8">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500 text-white shadow-md">
+              <Printer className="h-5 w-5" />
+            </div>
+            <div>
+              <span className="text-lg font-bold tracking-tight text-slate-900">
+                ODONTO<span className="text-brand-500">PRINT</span>
+              </span>
+              <span className="block text-[9px] uppercase tracking-wider text-slate-400 font-semibold">
+                Dental Manufacturing
               </span>
             </div>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleManualLogin} className="space-y-4">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+              Acesso à Plataforma
+            </h2>
+            <p className="text-xs text-slate-500 mt-1.5">
+              Insira suas credenciais corporativas para entrar na central operacional.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                E-mail Profissional
+              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                E-mail Corporativo
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
                 <input
                   type="email"
+                  required
+                  autoFocus
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="seu.email@odontoprint.com.br"
-                  className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-slate-50/50"
+                  placeholder="operador@odontoprint.com.br"
+                  className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/50 hover:bg-white transition"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Senha de Acesso
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-semibold text-slate-700">
+                  Senha
+                </label>
+                <button
+                  type="button"
+                  onClick={() => toast.info("Para redefinir sua senha, solicite ao Administrador do laboratório.")}
+                  className="text-xs font-medium text-brand-600 hover:text-brand-700 transition"
+                >
+                  Esqueceu a senha?
+                </button>
+              </div>
+
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-slate-50/50"
+                  placeholder="••••••••••••"
+                  className="w-full pl-10 pr-10 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 bg-slate-50/50 hover:bg-white transition"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 p-0.5"
+                  title={showPassword ? "Ocultar senha" : "Exibir senha"}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-1">
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+                />
+                <span className="text-xs text-slate-600">Lembrar neste navegador</span>
+              </label>
             </div>
 
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-2"
-              variant="default"
-              size="lg"
+              className="w-full mt-3 h-11 text-sm font-semibold rounded-xl bg-brand-600 hover:bg-brand-700 text-white shadow-sm gap-2"
             >
-              {isLoading ? "Conectando..." : "Entrar no Sistema"}
+              {isLoading ? (
+                <>
+                  <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                  <span>Verificando credenciais...</span>
+                </>
+              ) : (
+                <>
+                  <span>Entrar no Sistema</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
             </Button>
           </form>
-        </div>
 
-        <div className="text-center mt-6 text-xs text-slate-400">
-          ODONTOPRINT &copy; {new Date().getFullYear()} &bull; Laboratório de Odontologia Digital & Impressão 3D
+          {/* Dica discreta de primeiro acesso */}
+          <div className="mt-8 rounded-xl border border-slate-200/90 bg-slate-50/60 p-3.5 text-xs text-slate-500">
+            <span className="font-semibold text-slate-700">Primeiro acesso?</span>
+            <p className="mt-0.5 text-[11px] text-slate-500 leading-relaxed">
+              Utilize o e-mail do seu cadastro corporativo (ex: <code className="text-brand-700 font-mono">admin@odontoprint.com.br</code>) ou contate o responsável técnico do laboratório para liberação de acesso.
+            </p>
+          </div>
+
+          <div className="mt-10 pt-6 border-t border-slate-100 flex items-center justify-center gap-2 text-[11px] text-slate-400">
+            <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
+            <span>Ambiente Seguro Criptografado &bull; TLS 1.3</span>
+          </div>
         </div>
       </div>
     </div>

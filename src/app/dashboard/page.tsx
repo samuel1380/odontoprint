@@ -55,73 +55,70 @@ export default function DashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              Painel Operacional ODONTOPRINT
+              Painel Geral de Manufatura
             </h1>
             <p className="text-sm text-slate-500 mt-1">
-              Visão consolidada da fila FIFO, parque de impressoras 3D e rastreabilidade de resinas.
+              Visão consolidada da fila de fatiamento FIFO, parque de impressoras 3D e rastreabilidade de resinas.
             </p>
           </div>
 
           <div className="flex items-center gap-2.5">
             <Link href="/cadista/status">
-              <Button variant="default" size="sm" className="gap-1.5">
+              <Button variant="default" size="sm" className="gap-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-xs">
                 <FileCheck2 className="w-4 h-4" />
                 Cadista: Novo Trabalho
               </Button>
             </Link>
             <Link href="/fila">
-              <Button variant="outline" size="sm" className="gap-1.5 border-brand-200 text-brand-700 bg-brand-50/50 hover:bg-brand-50">
+              <Button variant="outline" size="sm" className="gap-1.5 border-slate-300 text-slate-700 hover:bg-slate-50 bg-white rounded-xl shadow-xs">
                 <ListOrdered className="w-4 h-4" />
-                Acessar Fila
+                Fila de Impressão
               </Button>
             </Link>
           </div>
         </div>
 
-        {/* STATUS DA OPERAÇÃO (DESTAQUE EMPRESARIAL REQUISITO 27) */}
-        <div className="rounded-2xl border border-brand-200/80 bg-gradient-to-r from-brand-50 via-white to-blue-50/40 p-6 shadow-card">
-          <div className="flex items-center justify-between pb-4 mb-4 border-b border-brand-100">
+        {/* STATUS DA OPERAÇÃO */}
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-xs">
+          <div className="flex items-center justify-between pb-4 mb-5 border-b border-slate-100">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500 text-white shadow-sm">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white shadow-xs">
                 <Activity className="h-4 w-4" />
               </div>
               <div>
-                <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800">
-                  Status da Operação em Tempo Real
+                <h2 className="text-sm font-bold tracking-tight text-slate-900">
+                  Indicadores Críticos da Linha de Produção
                 </h2>
                 <p className="text-xs text-slate-500">
-                  Monitoramento instantâneo das variáveis críticas de produção
+                  Monitoramento contínuo de disponibilidade, pendências e conformidade
                 </p>
               </div>
             </div>
-            <Badge variant="lime" className="gap-1">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-lime-500"></span>
-              </span>
-              Produção Ativa
-            </Badge>
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/60">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              Operação Regular
+            </span>
           </div>
 
           {isLoading ? (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[1, 2, 3, 4].map((i) => (
-                <Skeleton key={i} className="h-20 w-full" />
+                <Skeleton key={i} className="h-20 w-full rounded-xl" />
               ))}
             </div>
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="rounded-xl border border-emerald-100 bg-white p-4 shadow-subtle">
+              <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 transition-colors hover:bg-white hover:border-slate-300">
                 <span className="text-xs font-medium text-slate-500">Impressoras Disponíveis</span>
-                <div className="text-2xl font-bold text-emerald-600 mt-1 flex items-baseline gap-2">
+                <div className="text-2xl font-bold text-slate-900 mt-1 flex items-baseline gap-2">
                   {metrics?.printers_available}
                   <span className="text-xs font-normal text-slate-400">
-                    de {(metrics?.printers_available || 0) + (metrics?.printers_blocked || 0)} unidades
+                    de {(metrics?.printers_available || 0) + (metrics?.printers_blocked || 0)} ativas
                   </span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-brand-100 bg-white p-4 shadow-subtle">
+              <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 transition-colors hover:bg-white hover:border-slate-300">
                 <span className="text-xs font-medium text-slate-500">Fila Atual de Espera</span>
                 <div className="text-2xl font-bold text-brand-600 mt-1 flex items-baseline gap-2">
                   {metrics?.items_in_queue}
@@ -129,7 +126,7 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-rose-200 bg-rose-50/50 p-4 shadow-subtle">
+              <div className="rounded-xl border border-rose-200/80 bg-rose-50/30 p-4 transition-colors hover:bg-rose-50/60">
                 <span className="text-xs font-medium text-rose-700 font-semibold">Reimpressões Pendentes</span>
                 <div className="text-2xl font-bold text-rose-600 mt-1 flex items-baseline gap-2">
                   {metrics?.reprints_pending}
@@ -137,11 +134,11 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-blue-100 bg-white p-4 shadow-subtle">
-                <span className="text-xs font-medium text-slate-500">Resinas Calibradas</span>
-                <div className="text-2xl font-bold text-slate-800 mt-1 flex items-baseline gap-2">
+              <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 transition-colors hover:bg-white hover:border-slate-300">
+                <span className="text-xs font-medium text-slate-500">Lotes de Resina Aprovados</span>
+                <div className="text-2xl font-bold text-slate-900 mt-1 flex items-baseline gap-2">
                   {metrics?.resins_calibrated}
-                  <span className="text-xs font-normal text-slate-400">lotes liberados</span>
+                  <span className="text-xs font-normal text-slate-400">combinações aptas</span>
                 </div>
               </div>
             </div>
@@ -254,7 +251,7 @@ export default function DashboardPage() {
                   <div className="absolute -left-[31px] top-0 h-4 w-4 rounded-full border-2 border-white bg-indigo-500 shadow-sm" />
                   <div className="text-xs font-bold text-slate-800">3. Nomenclatura Atômica</div>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    Gera sequencial único A001 ou 00A001 para retentativas.
+                    Gera sequencial único A001 ou 00A1 para repetições.
                   </p>
                 </div>
 

@@ -200,19 +200,20 @@ export function Sidebar() {
         })}
       </div>
 
-      {/* Footer / Demo Alert Badge */}
+      {/* Footer / Lab Station Status */}
       <div className="border-t border-slate-200/80 p-4 bg-slate-50/50">
-        <div className="rounded-xl border border-brand-100 bg-brand-50/60 p-3">
-          <div className="flex items-center gap-2 text-xs font-semibold text-brand-700">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+        <div className="rounded-xl border border-slate-200/80 bg-white p-3 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Ambiente</span>
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              Operacional
             </span>
-            Demonstração Empresarial
           </div>
-          <p className="mt-1 text-[11px] text-slate-500 leading-tight">
-            Alterne perfis no topo para testar fluxos de Cadista, Resinas e Impressão.
-          </p>
+          <div className="mt-2 text-xs font-semibold text-slate-800 flex items-center justify-between">
+            <span>ODONTOPRINT LAB</span>
+            <span className="text-[10px] font-normal text-slate-400">v2.4.0</span>
+          </div>
         </div>
       </div>
     </aside>
