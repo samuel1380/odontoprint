@@ -47,6 +47,11 @@ export function Topbar({ onOpenMobileMenu }: TopbarProps) {
         >
           <Menu className="w-5 h-5" />
         </button>
+        <img
+          src="/logo.jpg"
+          alt="OdontoPrint"
+          className="h-7 w-7 rounded-lg object-contain lg:hidden shrink-0 border border-slate-200/80 p-0.5 bg-white shadow-2xs"
+        />
         <div className="min-w-0 overflow-hidden">
           <Breadcrumbs />
         </div>

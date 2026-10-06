@@ -59,18 +59,20 @@ export default function LoginPage() {
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-brand-500/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Topo da Coluna Esquerda */}
+        {/* Topo da Coluna Esquerda com a nova Logo */}
         <div className="relative z-10">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-500 text-white shadow-lg shadow-brand-500/30">
-              <Printer className="h-6 w-6" />
-            </div>
+            <img
+              src="/logo.jpg"
+              alt="Logo OdontoPrint"
+              className="h-12 w-12 rounded-2xl object-contain shadow-lg shadow-brand-500/20 p-1 bg-white"
+            />
             <div>
-              <span className="text-xl font-bold tracking-tight">
+              <span className="text-xl font-black tracking-tight text-white">
                 ODONTO<span className="text-brand-400">PRINT</span>
               </span>
               <span className="block text-[10px] uppercase tracking-widest text-slate-400 font-semibold">
-                Dental Manufacturing Platform
+                Dental 3D Laboratory
               </span>
             </div>
           </div>
@@ -144,15 +146,17 @@ export default function LoginPage() {
         <div className="mx-auto w-full max-w-sm">
           {/* Logo visível em telas menores */}
           <div className="flex lg:hidden items-center gap-3 mb-8">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500 text-white shadow-md">
-              <Printer className="h-5 w-5" />
-            </div>
+            <img
+              src="/logo.jpg"
+              alt="Logo OdontoPrint"
+              className="h-11 w-11 rounded-2xl object-contain shadow-xs border border-slate-200 p-0.5 bg-white shrink-0"
+            />
             <div>
-              <span className="text-lg font-bold tracking-tight text-slate-900">
-                ODONTO<span className="text-brand-500">PRINT</span>
+              <span className="text-lg font-black tracking-tight text-slate-900">
+                ODONTO<span className="text-brand-600">PRINT</span>
               </span>
-              <span className="block text-[9px] uppercase tracking-wider text-slate-400 font-semibold">
-                Dental Manufacturing
+              <span className="block text-[9px] uppercase tracking-wider text-slate-400 font-bold">
+                Dental 3D Laboratory
               </span>
             </div>
           </div>

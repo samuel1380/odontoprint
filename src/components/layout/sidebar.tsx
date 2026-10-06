@@ -158,21 +158,23 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        {/* Brand Header */}
-        <div className="flex h-16 items-center justify-between border-b border-slate-200/80 px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-white shadow-sm">
-              <Printer className="h-5 w-5" />
-            </div>
+        {/* Brand Header com a nova Logo OdontoPrint */}
+        <div className="flex h-16 items-center justify-between border-b border-slate-200/80 px-4 sm:px-6">
+          <Link href="/dashboard" onClick={onClose} className="flex items-center gap-2.5 group">
+            <img
+              src="/logo.jpg"
+              alt="Logo OdontoPrint"
+              className="h-9 w-9 rounded-xl object-contain shadow-xs border border-slate-200/80 p-0.5 bg-white group-hover:scale-105 transition-transform shrink-0"
+            />
             <div>
-              <div className="text-base font-black tracking-wider text-slate-900 flex items-center gap-1.5">
-                ODONTO<span className="text-brand-500">PRINT</span>
+              <div className="text-base font-black tracking-wider text-slate-900 flex items-center">
+                ODONTO<span className="text-brand-600">PRINT</span>
               </div>
-              <p className="text-[10px] font-medium tracking-tight text-slate-400 uppercase">
-                Dental Manufacturing
+              <p className="text-[9px] font-bold tracking-tight text-slate-400 uppercase">
+                Dental 3D Laboratory
               </p>
             </div>
-          </div>
+          </Link>
 
           {/* Botão de Fechar Mobile */}
           <button
