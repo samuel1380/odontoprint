@@ -13,6 +13,8 @@ const ROUTE_LABELS: Record<string, string> = {
   fatiador: "Fatiador & Preparo",
   impressoes: "Impressões",
   impressoras: "Impressoras 3D",
+  fresagem: "Fila de Fresagem CNC",
+  acabamento: "Bancada de Acabamento & Maquiagem",
   manutencao: "Checklist de Manutenção",
   resinas: "Lotes de Resina",
   recebimento: "Recebimento de Resina",
@@ -56,13 +58,13 @@ export function Breadcrumbs() {
           <React.Fragment key={path}>
             <ChevronRight className="h-3 w-3 text-slate-400" />
             {isLast ? (
-              <span className="font-semibold text-slate-900 capitalize truncate max-w-[200px]">
+              <span className="font-semibold text-slate-900 capitalize truncate max-w-[120px] sm:max-w-[220px]">
                 {label}
               </span>
             ) : (
               <Link
                 href={path}
-                className="text-slate-500 hover:text-slate-800 transition capitalize"
+                className="text-slate-500 hover:text-slate-800 transition capitalize truncate max-w-[80px] sm:max-w-none hidden xs:inline"
               >
                 {label}
               </Link>

@@ -211,7 +211,7 @@ function FatiadorContent() {
               Estação de Preparo
             </Badge>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight mt-1 flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mt-1 flex items-center gap-2">
             Fatiador: Preparar Ordem de Impressão
           </h1>
         </div>

@@ -6,12 +6,15 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-export type UserRole = "ADMIN" | "CADISTA" | "OPERADOR_RESINA" | "OPERADOR_IMPRESSAO";
+export type UserRole = "ADMIN" | "CADISTA" | "OPERADOR_RESINA" | "OPERADOR_IMPRESSAO" | "PROTETICO_ACABAMENTO";
 export type ProcessType = "FRESAGEM" | "IMPRESSAO";
 export type DentalFileType =
+  | "MODELO_COM_FUROS"
   | "MODELO_DE_TRABALHO"
   | "ANTAGONISTA"
   | "TROQUEL"
+  | "GENGIVA_ARTIFICIAL"
+  | "COROA_FRESADA"
   | "PLACA_MIORRELAXANTE"
   | "ELEMENTO_PROVA"
   | "ELEMENTO_PROVISORIO"
@@ -22,6 +25,7 @@ export type PrintItemStatus =
   | "AGUARDANDO_FILA"
   | "EM_PREPARO"
   | "EM_IMPRESSAO"
+  | "PRONTO_ACABAMENTO"
   | "CONCLUIDO"
   | "FALHOU_REIMPRESSAO";
 

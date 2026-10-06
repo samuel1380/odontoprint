@@ -67,7 +67,38 @@ export interface CaseTimelineEvent {
   timestamp: string;
   title: string;
   description: string;
-  type: "CREATED" | "QUEUED" | "PREPARED" | "PRINTING" | "COMPLETED" | "FAILED" | "REPRINT";
+  type: "CREATED" | "QUEUED" | "PREPARED" | "PRINTING" | "COMPLETED" | "FAILED" | "REPRINT" | "MILLING" | "FINISHING";
   badgeColor?: string;
   meta?: Record<string, any>;
+}
+
+export interface FinishingCaseItem {
+  id: string; // print_job_item_id ou milling_id
+  case_id: string;
+  patient_code: string;
+  patient_name: string | null;
+  file_type: DentalFileType;
+  has_sockets: boolean; // se é modelo com furos para encaixe de dentes
+  origin: "IMPRESSAO" | "FRESAGEM";
+  status: "AGUARDANDO_MONTAGEM" | "EM_MAQUIAGEM" | "APROVADO_CQ" | "EXPEDIDO";
+  teeth_inserted?: boolean; // dentes encaixados nos furos
+  occlusion_checked?: boolean; // oclusão verificada com antagonista
+  glaze_applied?: boolean; // maquiagem / glaze aplicado
+  assigned_technician?: string | null;
+  finished_at?: string | null;
+  created_at: string;
+}
+
+export interface MillingItem {
+  id: string;
+  case_id: string;
+  patient_code: string;
+  patient_name: string | null;
+  file_type: DentalFileType;
+  material: "ZIRCONIA" | "PMMA" | "CERA";
+  block_lot?: string;
+  status: "AGUARDANDO_FRESAGEM" | "EM_USINAGEM" | "FRESADO_CONCLUIDO" | "FALHOU";
+  started_at?: string | null;
+  finished_at?: string | null;
+  created_at: string;
 }

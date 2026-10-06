@@ -89,15 +89,19 @@ export default function CadistaStatusPage() {
         return;
       }
 
-      toast.success(`Trabalho ${patientCode.toUpperCase()} criado! ${selectedFiles.length} modelos entraram na fila FIFO.`, {
-        action: {
-          label: "Ver na Fila",
-          onClick: () => router.push("/fila"),
-        },
-      });
+      toast.success(
+        `Trabalho ${patientCode.toUpperCase()} criado! ${selectedFiles.length} itens cadastrados na esteira de produção.`,
+        {
+          description: "Os itens foram encaminhados para a Fila correspondente (Impressão 3D ou Fresagem).",
+          action: {
+            label: processType === "FRESAGEM" ? "Ver Fresagem" : "Ver Fila 3D",
+            onClick: () => router.push(processType === "FRESAGEM" ? "/fresagem" : "/fila"),
+          },
+        }
+      );
 
-      // Limpa formulário ou redireciona
-      router.push("/fila");
+      // Redireciona para o setor correspondente
+      router.push(processType === "FRESAGEM" ? "/fresagem" : "/fila");
     } catch (err: any) {
       toast.error(err.message || "Erro inesperado ao salvar trabalho.");
     } finally {
@@ -109,7 +113,7 @@ export default function CadistaStatusPage() {
     <AppShell>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-200/80 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 border-b border-slate-200/80 pb-4">
           <div>
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className="text-brand-700 bg-brand-50 border-brand-200">
@@ -118,12 +122,12 @@ export default function CadistaStatusPage() {
               <span className="text-xs text-slate-400">&bull;</span>
               <span className="text-xs text-slate-500">Digitalização de Fluxograma</span>
             </div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight mt-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mt-1">
               Atualização de Status do Trabalho
             </h1>
           </div>
 
-          <div className="text-right text-xs text-slate-400">
+          <div className="text-xs text-slate-400">
             Responsável: <span className="font-semibold text-slate-700">{user.full_name}</span>
           </div>
         </div>
@@ -272,21 +276,21 @@ export default function CadistaStatusPage() {
 
           {/* Card 3: ARQUIVOS A SEREM IMPRESSOS (Lista de 7 modelos) */}
           <Card className={validationError ? "border-rose-300 ring-2 ring-rose-100" : ""}>
-            <CardHeader className="pb-3 flex flex-row items-center justify-between">
-              <div>
+            <CardHeader className="pb-3 flex flex-row items-center justify-between gap-2">
+              <div className="min-w-0">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-brand-500" />
-                  3. Arquivos a Serem Impressos
+                  <Layers className="w-4 h-4 text-brand-500 shrink-0" />
+                  <span>3. Arquivos a Serem Impressos</span>
                 </CardTitle>
-                <CardDescription>
-                  Selecione exatamente quais peças/modelos anatômicos compõem este trabalho.
+                <CardDescription className="text-xs">
+                  Selecione exatamente quais modelos anatômicos compõem este trabalho.
                 </CardDescription>
               </div>
 
               <button
                 type="button"
                 onClick={handleSelectAll}
-                className="text-xs font-semibold text-brand-600 hover:text-brand-700 hover:underline"
+                className="text-xs font-semibold text-brand-600 hover:text-brand-700 hover:underline shrink-0 whitespace-nowrap"
               >
                 {selectedFiles.length === DENTAL_FILE_TYPES.length
                   ? "Desmarcar Todos"
@@ -319,7 +323,7 @@ export default function CadistaStatusPage() {
                       <div className="flex items-center gap-3">
                         {/* Círculo de seleção visual como desenhado no fluxograma */}
                         <div
-                          className={`h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                          className={`h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all shrink-0 ${
                             isSelected
                               ? "border-approvedGreen-600 bg-approvedGreen-500 text-white shadow-sm"
                               : "border-slate-300 bg-white"
@@ -328,19 +332,39 @@ export default function CadistaStatusPage() {
                           {isSelected && <CheckCircle2 className="w-4 h-4" />}
                         </div>
                         <div>
-                          <span
-                            className={`text-sm font-semibold ${
-                              isSelected ? "text-slate-900" : "text-slate-700"
-                            }`}
-                          >
-                            {file.label}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span
+                              className={`text-sm font-semibold ${
+                                isSelected ? "text-slate-900" : "text-slate-700"
+                              }`}
+                            >
+                              {file.label}
+                            </span>
+                            {"category" in file && (
+                              <Badge
+                                variant="secondary"
+                                className={`text-[10px] py-0 px-1.5 ${
+                                  (file as any).category === "FRESAGEM"
+                                    ? "bg-purple-50 text-purple-700 border-purple-200"
+                                    : (file as any).category === "MISTO"
+                                    ? "bg-slate-100 text-slate-700 border-slate-200"
+                                    : "bg-blue-50 text-blue-700 border-blue-200"
+                                }`}
+                              >
+                                {(file as any).category === "FRESAGEM"
+                                  ? "Fresadora CNC"
+                                  : (file as any).category === "MISTO"
+                                  ? "Impressora ou Fresadora"
+                                  : "Impressora 3D"}
+                              </Badge>
+                            )}
+                          </div>
                           <p className="text-[11px] text-slate-400">{file.description}</p>
                         </div>
                       </div>
 
                       {isSelected && (
-                        <Badge variant="lime" className="text-[10px] uppercase font-bold">
+                        <Badge variant="lime" className="text-[10px] uppercase font-bold shrink-0">
                           Selecionado
                         </Badge>
                       )}
@@ -352,15 +376,15 @@ export default function CadistaStatusPage() {
               <div className="pt-2 flex items-center gap-2 text-xs text-slate-400">
                 <Info className="w-3.5 h-3.5 shrink-0 text-brand-500" />
                 <span>
-                  Itens selecionados serão enviados automaticamente à Fila FIFO com carimbo de data e hora.
+                  Modelos impressos (com furos) e dentes fresados serão reunidos na Bancada de Acabamento & Maquiagem para montagem e glaze.
                 </span>
               </div>
             </CardContent>
           </Card>
 
           {/* Action Bar */}
-          <div className="flex items-center justify-between pt-2">
-            <div className="text-xs text-slate-500">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
+            <div className="text-xs text-slate-500 text-center sm:text-left">
               <span className="font-semibold text-slate-800">{selectedFiles.length}</span> de{" "}
               {DENTAL_FILE_TYPES.length} arquivos selecionados
             </div>
@@ -369,13 +393,13 @@ export default function CadistaStatusPage() {
               type="submit"
               size="lg"
               disabled={isSubmitting}
-              className="gap-2 px-8 font-bold"
+              className="gap-2 px-6 sm:px-8 font-bold w-full sm:w-auto justify-center"
             >
               {isSubmitting ? (
                 "Cadastrando Trabalho..."
               ) : (
                 <>
-                  Confirmar e Enviar para Fila de Impressão
+                  Confirmar e Enviar para Fila
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}

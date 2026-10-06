@@ -19,6 +19,7 @@ import {
   Scissors,
   Layers,
   Sparkles,
+  Cog,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -52,27 +53,39 @@ export default function DashboardPage() {
     <AppShell>
       <div className="space-y-8">
         {/* Header with Title & Quick Actions */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
               Painel Geral de Manufatura
             </h1>
-            <p className="text-sm text-slate-500 mt-1">
-              Visão consolidada da fila de fatiamento FIFO, parque de impressoras 3D e rastreabilidade de resinas.
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              Visão consolidada da esteira: Modelagem CAD, Fila 3D, Fresagem CNC e Bancada de Acabamento/Maquiagem.
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2">
             <Link href="/cadista/status">
-              <Button variant="default" size="sm" className="gap-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-xs">
-                <FileCheck2 className="w-4 h-4" />
-                Cadista: Novo Trabalho
+              <Button variant="default" size="sm" className="gap-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-xl shadow-xs text-xs">
+                <FileCheck2 className="w-3.5 h-3.5" />
+                1. CAD / Cadista
               </Button>
             </Link>
             <Link href="/fila">
-              <Button variant="outline" size="sm" className="gap-1.5 border-slate-300 text-slate-700 hover:bg-slate-50 bg-white rounded-xl shadow-xs">
-                <ListOrdered className="w-4 h-4" />
-                Fila de Impressão
+              <Button variant="outline" size="sm" className="gap-1.5 border-slate-300 text-slate-700 hover:bg-slate-50 bg-white rounded-xl shadow-xs text-xs">
+                <ListOrdered className="w-3.5 h-3.5" />
+                2. Fila 3D
+              </Button>
+            </Link>
+            <Link href="/fresagem">
+              <Button variant="outline" size="sm" className="gap-1.5 border-slate-300 text-slate-700 hover:bg-slate-50 bg-white rounded-xl shadow-xs text-xs">
+                <Cog className="w-3.5 h-3.5 text-purple-600" />
+                3. Fresagem
+              </Button>
+            </Link>
+            <Link href="/acabamento">
+              <Button variant="outline" size="sm" className="gap-1.5 border-slate-300 text-slate-700 hover:bg-slate-50 bg-white rounded-xl shadow-xs text-xs">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                4. Acabamento
               </Button>
             </Link>
           </div>

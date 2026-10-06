@@ -13,12 +13,17 @@ import {
   Users,
   Check,
   Activity,
-  Layers
+  Layers,
+  Menu
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Breadcrumbs } from "./breadcrumbs";
 
-export function Topbar() {
+interface TopbarProps {
+  onOpenMobileMenu?: () => void;
+}
+
+export function Topbar({ onOpenMobileMenu }: TopbarProps) {
   const { user, activeRole, setActiveRole, logout, isSupabaseConnected } = useAuth();
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [showRoleSwitcher, setShowRoleSwitcher] = useState(false);
@@ -31,10 +36,20 @@ export function Topbar() {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white/95 px-6 lg:px-8 backdrop-blur-md">
-      {/* Left: Breadcrumbs */}
-      <div className="flex items-center gap-4">
-        <Breadcrumbs />
+    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white/95 px-4 sm:px-6 lg:px-8 backdrop-blur-md">
+      {/* Left: Mobile Toggle & Breadcrumbs */}
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        <button
+          type="button"
+          onClick={onOpenMobileMenu}
+          className="lg:hidden -ml-1 p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition focus:outline-hidden shrink-0"
+          aria-label="Abrir menu de navegação"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+        <div className="min-w-0 overflow-hidden">
+          <Breadcrumbs />
+        </div>
       </div>
 
       {/* Right: Operational Status & User Profile */}

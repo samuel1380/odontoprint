@@ -111,7 +111,7 @@ export default function FilaPage() {
     <AppShell>
       <div className="space-y-6">
         {/* Top Header & Proceed Button */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-200/80 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200/80 pb-4">
           <div>
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className="text-brand-700 bg-brand-50 border-brand-200">
@@ -120,7 +120,7 @@ export default function FilaPage() {
               <span className="text-xs text-slate-400">&bull;</span>
               <span className="text-xs text-slate-500">Ordenação Estrita FIFO</span>
             </div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight mt-1 flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mt-1 flex items-center gap-2">
               Fila de Impressão 3D
             </h1>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -128,12 +128,12 @@ export default function FilaPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
             <Button
               variant="outline"
               size="sm"
               onClick={loadQueue}
-              className="gap-1.5 text-xs text-slate-600"
+              className="gap-1.5 text-xs text-slate-600 w-full sm:w-auto justify-center"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               Atualizar
@@ -144,7 +144,7 @@ export default function FilaPage() {
               disabled={selectedItemIds.length === 0}
               variant={selectedItemIds.length > 0 ? "lime" : "default"}
               size="default"
-              className="gap-2 font-bold shadow-sm"
+              className="gap-2 font-bold shadow-xs w-full sm:w-auto justify-center"
             >
               <Scissors className="w-4 h-4" />
               Preparar no Fatiador ({selectedItemIds.length})
@@ -154,8 +154,8 @@ export default function FilaPage() {
         </div>
 
         {/* Filter Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-subtle">
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-xs">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full lg:w-auto">
             <div className="relative w-full sm:w-64">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
               <input
@@ -163,16 +163,16 @@ export default function FilaPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Filtrar paciente (ex: PAC-100)..."
-                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50/50"
+                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-hidden focus:ring-2 focus:ring-brand-500 bg-slate-50/50"
               />
             </div>
 
-            <div className="flex items-center gap-1 border-l border-slate-200 pl-2">
+            <div className="flex flex-wrap items-center gap-1 sm:border-l sm:border-slate-200 sm:pl-2">
               <Button
                 size="sm"
                 variant={activeFilter === "TODOS" ? "default" : "ghost"}
                 onClick={() => setActiveFilter("TODOS")}
-                className="text-xs h-8"
+                className="text-xs h-8 flex-1 sm:flex-initial"
               >
                 Todos ({totalItemsInQueue})
               </Button>
@@ -180,7 +180,7 @@ export default function FilaPage() {
                 size="sm"
                 variant={activeFilter === "REIMPRESSAO" ? "destructive" : "ghost"}
                 onClick={() => setActiveFilter("REIMPRESSAO")}
-                className="text-xs h-8 gap-1.5"
+                className="text-xs h-8 gap-1.5 flex-1 sm:flex-initial"
               >
                 <AlertTriangle className="w-3 h-3 text-rose-500" />
                 Reimpressões ({totalReprintItems})
@@ -189,14 +189,14 @@ export default function FilaPage() {
                 size="sm"
                 variant={activeFilter === "AGUARDANDO" ? "secondary" : "ghost"}
                 onClick={() => setActiveFilter("AGUARDANDO")}
-                className="text-xs h-8"
+                className="text-xs h-8 flex-1 sm:flex-initial"
               >
                 Novos ({totalItemsInQueue - totalReprintItems})
               </Button>
             </div>
           </div>
 
-          <div className="text-xs text-slate-500 font-medium">
+          <div className="text-xs text-slate-500 font-medium sm:text-right">
             <span className="font-bold text-brand-600">{selectedItemIds.length}</span> modelos selecionados para a mesa
           </div>
         </div>
@@ -232,12 +232,12 @@ export default function FilaPage() {
                   }`}
                 >
                   {/* Card Patient Header */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-50/70 border-b border-slate-200/70 px-5 py-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-50/70 border-b border-slate-200/70 px-4 sm:px-5 py-3">
                     <div className="flex items-center gap-3">
                       <button
                         type="button"
                         onClick={() => handleSelectAllInCard(card.items)}
-                        className="text-slate-400 hover:text-brand-600 transition"
+                        className="text-slate-400 hover:text-brand-600 transition shrink-0"
                         title={allCardSelected ? "Desmarcar todos deste paciente" : "Selecionar todos deste paciente"}
                       >
                         {allCardSelected ? (
@@ -247,8 +247,8 @@ export default function FilaPage() {
                         )}
                       </button>
 
-                      <div className="flex items-baseline gap-2">
-                        <span className="font-mono font-black text-base text-slate-900 tracking-wider">
+                      <div className="flex flex-wrap items-baseline gap-1.5 sm:gap-2">
+                        <span className="font-mono font-black text-sm sm:text-base text-slate-900 tracking-wider">
                           {card.patient_code}
                         </span>
                         {card.patient_name && (
@@ -259,9 +259,9 @@ export default function FilaPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4 text-xs text-slate-500">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-slate-500 pl-8 sm:pl-0">
                       <div className="flex items-center gap-1.5 text-slate-600 bg-white px-2.5 py-1 rounded-full border border-slate-200 shadow-2xs">
-                        <Clock className="w-3.5 h-3.5 text-brand-500" />
+                        <Clock className="w-3.5 h-3.5 text-brand-500 shrink-0" />
                         <span>Entrada: {formatDate(card.queue_entered_at)}</span>
                         <span className="font-bold text-slate-700">
                           ({formatRelativeWait(card.queue_entered_at)} atrás)

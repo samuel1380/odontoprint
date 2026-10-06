@@ -21,6 +21,8 @@ import {
   EligibleResinOption,
   DashboardMetrics,
   CaseTimelineEvent,
+  FinishingCaseItem,
+  MillingItem,
 } from "@/types/domain";
 import {
   validateMaintenanceChecklist,
@@ -55,6 +57,8 @@ let mockPrintJobItems: PrintJobItem[] = [];
 let mockPrintRuns: PrintRun[] = [];
 let mockPrintRunItems: PrintRunItem[] = [];
 let mockAuditLogs: AuditLog[] = [];
+let mockMillingItems: MillingItem[] = [];
+let mockFinishingItems: FinishingCaseItem[] = [];
 
 let normalSeqCounter = 0;
 let retrySeqCounter = 0;
@@ -139,7 +143,33 @@ export class OdontoPrintService {
       created_at: now,
     };
 
-    const newItems: PrintJobItem[] = params.selected_files.map((fileType) => ({
+    const millingFileTypes = ["COROA_FRESADA", "ELEMENTO_CARGA_CERAMICA"];
+
+    // Separação inteligente: se o Cadista escolheu Fresagem ou itens de fresagem, vai para a fila de Fresagem
+    const millingFiles = params.selected_files.filter(
+      (f) => millingFileTypes.includes(f) || params.process_type === "FRESAGEM"
+    );
+    // Itens de manufatura aditiva vão para a Fila FIFO de Impressão 3D
+    const printFiles = params.selected_files.filter(
+      (f) => !millingFileTypes.includes(f) && params.process_type !== "FRESAGEM"
+    );
+
+    // Registra na fila de Fresagem CNC se houver itens de usinagem
+    for (const f of millingFiles) {
+      mockMillingItems.unshift({
+        id: crypto.randomUUID(),
+        case_id: caseId,
+        patient_code: cleanCode,
+        patient_name: params.patient_name?.trim() || null,
+        file_type: f,
+        material: f === "ELEMENTO_CARGA_CERAMICA" ? "ZIRCONIA" : "PMMA",
+        status: "AGUARDANDO_FRESAGEM",
+        created_at: now,
+      });
+    }
+
+    // Registra na fila de Impressão 3D se houver modelos/troqueis
+    const newItems: PrintJobItem[] = (printFiles.length > 0 ? printFiles : (params.process_type === "IMPRESSAO" ? params.selected_files : [])).map((fileType) => ({
       id: crypto.randomUUID(),
       print_job_id: jobId,
       file_type: fileType,
@@ -151,8 +181,10 @@ export class OdontoPrintService {
 
     // Persist in mock state
     mockCases.unshift(newCase);
-    mockPrintJobs.unshift(newJob);
-    mockPrintJobItems.unshift(...newItems);
+    if (newItems.length > 0) {
+      mockPrintJobs.unshift(newJob);
+      mockPrintJobItems.unshift(...newItems);
+    }
 
     // Audit log
     mockAuditLogs.unshift({
@@ -676,20 +708,40 @@ export class OdontoPrintService {
           created_at: now,
         });
       } else {
-        // CONCLUÍDO
+        // CONCLUÍDO NA IMPRESSÃO 3D -> Lavagem, Pós-Cura e Envio para Bancada de Acabamento
         completedCount++;
         ri.result = "CONCLUIDO";
-        jobItem.status = "CONCLUIDO";
+        jobItem.status = "PRONTO_ACABAMENTO";
+
+        const parentJob = mockPrintJobs.find((j) => j.id === jobItem.print_job_id);
+        const parentCase = mockCases.find((c) => c.id === parentJob?.case_id);
+        const hasSockets = jobItem.file_type === "MODELO_COM_FUROS" || jobItem.file_type === "MODELO_DE_TRABALHO";
+
+        mockFinishingItems.unshift({
+          id: jobItem.id,
+          case_id: parentJob?.case_id || "",
+          patient_code: parentCase?.patient_code || "PAC",
+          patient_name: parentCase?.patient_name || null,
+          file_type: jobItem.file_type,
+          has_sockets: hasSockets,
+          origin: "IMPRESSAO",
+          status: "AGUARDANDO_MONTAGEM",
+          teeth_inserted: false,
+          occlusion_checked: false,
+          glaze_applied: false,
+          created_at: now,
+        });
 
         mockAuditLogs.unshift({
           id: crypto.randomUUID(),
           user_id: params.user_id || null,
-          action: "ITEM_CONCLUIDO",
+          action: "ITEM_ENVIADO_ACABAMENTO",
           entity_type: "print_job_items",
           entity_id: jobItem.id,
           new_data: {
             item_type: FILE_TYPE_LABELS[jobItem.file_type],
             run_code: run.run_code,
+            has_sockets: hasSockets,
           },
           created_at: now,
         });
@@ -888,6 +940,46 @@ export class OdontoPrintService {
       }
     }
 
+    // 4. Eventos de Fresagem CNC
+    const caseMilling = mockMillingItems.filter((m) => m.case_id === caseId);
+    for (const m of caseMilling) {
+      if (m.started_at) {
+        timeline.push({
+          id: `mill-start-${m.id}`,
+          timestamp: m.started_at,
+          title: `Usinagem CNC: ${FILE_TYPE_LABELS[m.file_type] || m.file_type}`,
+          description: `Bloco de ${m.material} (${m.block_lot || "Lote"}) carregado na fresadora.`,
+          type: "MILLING",
+          badgeColor: "bg-purple-100 text-purple-800",
+        });
+      }
+      if (m.finished_at && m.status === "FRESADO_CONCLUIDO") {
+        timeline.push({
+          id: `mill-done-${m.id}`,
+          timestamp: m.finished_at,
+          title: `Fresagem Concluída: ${FILE_TYPE_LABELS[m.file_type] || m.file_type}`,
+          description: `Peça usinada com sucesso e despachada para a Bancada de Acabamento & Maquiagem.`,
+          type: "MILLING",
+          badgeColor: "bg-purple-100 text-purple-800",
+        });
+      }
+    }
+
+    // 5. Eventos de Bancada de Acabamento, Montagem & Maquiagem
+    const caseFinishing = mockFinishingItems.filter((f) => f.case_id === caseId);
+    for (const f of caseFinishing) {
+      if (f.finished_at && f.status === "APROVADO_CQ") {
+        timeline.push({
+          id: `finish-done-${f.id}`,
+          timestamp: f.finished_at,
+          title: `Bancada: Montagem & Maquiagem Aprovada no CQ`,
+          description: `Dentes assentados nos furos do modelo, oclusão testada, glaze aplicado e peça liberada para entrega.`,
+          type: "FINISHING",
+          badgeColor: "bg-amber-100 text-amber-800",
+        });
+      }
+    }
+
     timeline.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
     return {
@@ -929,5 +1021,155 @@ export class OdontoPrintService {
 
   static async getRecentActivities(): Promise<AuditLog[]> {
     return mockAuditLogs.slice(0, 10);
+  }
+
+  // ====================================================================
+  // MÓDULO 2.B: FRESAGEM CNC (USINAGEM DE ZIRCÔNIA & PMMA)
+  // ====================================================================
+  static async getMillingItems(): Promise<MillingItem[]> {
+    return mockMillingItems;
+  }
+
+  static async startMilling(id: string, block_lot: string, user_id?: string): Promise<{ success: boolean; error?: string }> {
+    const item = mockMillingItems.find((m) => m.id === id);
+    if (!item) return { success: false, error: "Item de fresagem não encontrado." };
+
+    item.status = "EM_USINAGEM";
+    item.block_lot = block_lot;
+    item.started_at = new Date().toISOString();
+
+    mockAuditLogs.unshift({
+      id: crypto.randomUUID(),
+      user_id: user_id || null,
+      action: "FRESAGEM_INICIADA",
+      entity_type: "milling_items",
+      entity_id: id,
+      new_data: { patient_code: item.patient_code, file_type: item.file_type, block_lot },
+      created_at: item.started_at,
+    });
+
+    return { success: true };
+  }
+
+  static async finalizeMilling(
+    id: string,
+    success: boolean,
+    failureReason?: string,
+    user_id?: string
+  ): Promise<{ success: boolean; error?: string }> {
+    const item = mockMillingItems.find((m) => m.id === id);
+    if (!item) return { success: false, error: "Item de fresagem não encontrado." };
+
+    const now = new Date().toISOString();
+    item.finished_at = now;
+
+    if (!success) {
+      item.status = "FALHOU";
+      mockAuditLogs.unshift({
+        id: crypto.randomUUID(),
+        user_id: user_id || null,
+        action: "FRESAGEM_FALHOU",
+        entity_type: "milling_items",
+        entity_id: id,
+        new_data: { patient_code: item.patient_code, reason: failureReason || "Falha técnica na usinagem" },
+        created_at: now,
+      });
+      return { success: true };
+    }
+
+    item.status = "FRESADO_CONCLUIDO";
+
+    // Envia os dentes fresados para a Bancada de Acabamento & Maquiagem para encaixe nos furos do modelo!
+    mockFinishingItems.unshift({
+      id: item.id,
+      case_id: item.case_id,
+      patient_code: item.patient_code,
+      patient_name: item.patient_name,
+      file_type: item.file_type,
+      has_sockets: false,
+      origin: "FRESAGEM",
+      status: "AGUARDANDO_MONTAGEM",
+      teeth_inserted: false,
+      occlusion_checked: false,
+      glaze_applied: false,
+      created_at: now,
+    });
+
+    mockAuditLogs.unshift({
+      id: crypto.randomUUID(),
+      user_id: user_id || null,
+      action: "FRESAGEM_CONCLUIDA",
+      entity_type: "milling_items",
+      entity_id: id,
+      new_data: { patient_code: item.patient_code, file_type: item.file_type },
+      created_at: now,
+    });
+
+    return { success: true };
+  }
+
+  // ====================================================================
+  // MÓDULO 3: BANCADA DE ACABAMENTO, MONTAGEM DE DENTES & MAQUIAGEM
+  // ====================================================================
+  static async getFinishingItems(): Promise<FinishingCaseItem[]> {
+    return mockFinishingItems;
+  }
+
+  static async updateFinishingChecklist(params: {
+    id: string;
+    teeth_inserted?: boolean;
+    occlusion_checked?: boolean;
+    glaze_applied?: boolean;
+    technician_name?: string;
+  }): Promise<{ success: boolean; item?: FinishingCaseItem; error?: string }> {
+    const item = mockFinishingItems.find((f) => f.id === params.id);
+    if (!item) return { success: false, error: "Trabalho não encontrado na bancada de acabamento." };
+
+    if (params.teeth_inserted !== undefined) item.teeth_inserted = params.teeth_inserted;
+    if (params.occlusion_checked !== undefined) item.occlusion_checked = params.occlusion_checked;
+    if (params.glaze_applied !== undefined) item.glaze_applied = params.glaze_applied;
+    if (params.technician_name) item.assigned_technician = params.technician_name;
+
+    if (item.teeth_inserted || item.glaze_applied) {
+      item.status = "EM_MAQUIAGEM";
+    }
+
+    return { success: true, item };
+  }
+
+  static async approveFinishingCase(
+    id: string,
+    notes?: string,
+    user_id?: string
+  ): Promise<{ success: boolean; error?: string }> {
+    const item = mockFinishingItems.find((f) => f.id === id);
+    if (!item) return { success: false, error: "Trabalho não encontrado na bancada de acabamento." };
+
+    const now = new Date().toISOString();
+    item.status = "APROVADO_CQ";
+    item.finished_at = now;
+
+    // Atualiza status final do item correspondente de impressão para concluído total
+    const jobItem = mockPrintJobItems.find((i) => i.id === id);
+    if (jobItem) {
+      jobItem.status = "CONCLUIDO";
+    }
+
+    mockAuditLogs.unshift({
+      id: crypto.randomUUID(),
+      user_id: user_id || null,
+      action: "ACABAMENTO_APROVADO",
+      entity_type: "finishing_cases",
+      entity_id: id,
+      new_data: {
+        patient_code: item.patient_code,
+        teeth_inserted: item.teeth_inserted,
+        glaze_applied: item.glaze_applied,
+        notes,
+      },
+      created_at: now,
+    });
+
+    return { success: true };
   }
 }
