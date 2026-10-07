@@ -224,6 +224,20 @@ export class OdontoPrintService {
     return { success: true, case_id: caseId, job_id: jobId };
   }
 
+  // --- CASOS / PACIENTES ---
+  static async getCases(): Promise<Case[]> {
+    const { client, isConfigured } = this.getSupabase();
+    if (isConfigured && client) {
+      try {
+        const { data } = await client.from("cases").select("*").order("created_at", { ascending: false });
+        if (data) return data;
+      } catch (err) {
+        console.warn("Supabase getCases error:", err);
+      }
+    }
+    return [...mockCases];
+  }
+
   // --- FILA DE IMPRESSÃO (FIFO) ---
   static async getQueue(): Promise<{ items: QueueItem[]; cards: PatientQueueCard[] }> {
     const settings = await this.getSettings();

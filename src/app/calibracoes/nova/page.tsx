@@ -24,6 +24,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { AIService } from "@/services/ai-service";
+import { CalibrationRecommendation } from "@/types/ai.types";
 
 function NovaCalibracaoContent() {
   const router = useRouter();
@@ -38,6 +40,10 @@ function NovaCalibracaoContent() {
   const [selectedBatchId, setSelectedBatchId] = useState("");
   const [selectedPrinterId, setSelectedPrinterId] = useState("");
   const [calibrationNumber, setCalibrationNumber] = useState(1);
+
+  // AI Recommendation State
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [aiRecommendation, setAiRecommendation] = useState<CalibrationRecommendation | null>(null);
 
   // Technical Parameters (Digitáveis no fluxograma)
   const [initialExposure, setInitialExposure] = useState<number>(25.0);
@@ -54,6 +60,42 @@ function NovaCalibracaoContent() {
   const [cureTime, setCureTime] = useState<number>(10.0);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Consulta IA (Groq / Mistral) para sugerir parâmetros da resina e impressora
+  const handleAskAiCalibration = async () => {
+    const currentBatch = batches.find((b) => b.id === selectedBatchId);
+    const currentPrinter = printers.find((p) => p.id === selectedPrinterId);
+
+    if (!currentBatch || !currentPrinter) {
+      toast.warning("Selecione um lote de resina e uma impressora primeiro.");
+      return;
+    }
+
+    setIsAiLoading(true);
+    try {
+      const rec = await AIService.getCalibrationRecommendation({
+        printerName: `${currentPrinter.brand} ${currentPrinter.model} (${currentPrinter.name})`,
+        resinType: currentBatch.resin_type,
+        resinBrand: currentBatch.brand,
+        layerHeight: Number(layerHeight) || 0.05,
+      });
+
+      setAiRecommendation(rec);
+      setInitialExposure(rec.initialExposure ?? rec.initial_exposure_time ?? 25.0);
+      setExposureTime(rec.normalExposure ?? rec.exposure_time ?? 2.3);
+      setLiftSpeed(rec.liftSpeed ?? rec.lift_speed ?? 60.0);
+      setWashTime(rec.washTime ?? rec.wash_time ?? 5.0);
+      setCureTime(rec.cureTime ?? rec.cure_time ?? 10.0);
+
+      toast.success("Parâmetros sugeridos pela IA aplicados!", {
+        description: `Exposição ajustada para ${rec.normalExposure}s (Base: ${rec.initialExposure}s).`,
+      });
+    } catch {
+      toast.error("Erro ao obter sugestão da IA.");
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
 
   useEffect(() => {
     async function load() {
@@ -272,6 +314,52 @@ function NovaCalibracaoContent() {
                 ))}
               </select>
             </div>
+
+            {/* Botão de Sugestão de Parâmetros por IA */}
+            <div className="pt-1">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleAskAiCalibration}
+                disabled={isAiLoading || !selectedBatchId || !selectedPrinterId}
+                className="w-full bg-gradient-to-r from-indigo-50/80 via-brand-50/80 to-purple-50/80 hover:from-indigo-100 hover:to-purple-100 border-indigo-200 text-indigo-900 font-bold text-xs gap-2 py-2 shadow-sm transition-all"
+              >
+                {isAiLoading ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin text-brand-600" />
+                    Consultando IA (Groq / Mistral)...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5 text-brand-600" />
+                    ✨ Sugerir Parâmetros por IA (Groq / Mistral)
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Painel de Parecer Técnico da IA */}
+            {aiRecommendation && (
+              <div className="p-3 rounded-lg bg-indigo-50/60 border border-indigo-200 text-xs text-indigo-950 space-y-1.5 animate-in fade-in-50 duration-200">
+                <div className="flex items-center justify-between font-bold text-indigo-900">
+                  <span className="flex items-center gap-1.5 text-xs">
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                    Parecer da IA ({aiRecommendation.confidenceScore ? `${Math.round(aiRecommendation.confidenceScore * 100)}% confiança` : "Recomendado"})
+                  </span>
+                  <Badge variant="outline" className="text-[10px] bg-white border-indigo-300 text-indigo-700 font-mono">
+                    Alvo: {aiRecommendation.targetHexagonMm} mm
+                  </Badge>
+                </div>
+                <p className="text-[11px] leading-relaxed text-indigo-900/90">{aiRecommendation.notes}</p>
+                {aiRecommendation.tips && aiRecommendation.tips.length > 0 && (
+                  <ul className="text-[10px] text-indigo-800 list-disc list-inside space-y-0.5 pt-1 border-t border-indigo-200/50">
+                    {aiRecommendation.tips.map((tip, idx) => (
+                      <li key={idx}>{tip}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
 
             <div className="pt-2 border-t border-slate-100 grid grid-cols-2 gap-3">
               <div>

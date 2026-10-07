@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
+import { AICopilotDrawer } from "@/components/ai/ai-copilot-drawer";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -26,6 +27,9 @@ export function AppShell({ children }: AppShellProps) {
           {children}
         </main>
       </div>
+
+      {/* Assistente IA Copiloto OdontoPrint (Groq / Mistral) acessível em todo o sistema */}
+      <AICopilotDrawer />
     </div>
   );
 }
